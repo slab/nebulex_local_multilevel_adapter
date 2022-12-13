@@ -19,19 +19,16 @@ end
 
 ## Usage
 
-After installing, we can define our cache to use the adapter as follows:
+<!-- MDOC -->
+
+`NebulexLocalDistributedAdapter` setup resembles `Nebulex.Adapters.Multilevel` with two exceptions: `model` option is always
+`:inclusive` and the first level is autocreated:
 
 ```elixir
 defmodule MyApp.Cache do
   use Nebulex.Cache,
     otp_app: :slab,
     adapter: NebulexLocalDistributedAdapter
-end
-
-defmodule MyApp.Cache.Local do
-  use Nebulex.Cache,
-    otp_app: :slab,
-    adapter: Nebulex.Adapters.Local
 end
 
 # This can be shared cache, e.g. Partitioned, Replicated, Memcached
@@ -46,27 +43,38 @@ Then configure `MyApp.Cache` levels just like normal `Multilevel`:
 
 ```elixir
 config :my_app, MyApp.Cache,
+  local_opts: [],
   levels: [
-    {MyApp.Cache.Local, []}
     {MyApp.Cache.Redis, []},
   ]
 ```
+
+The adapter will automatically create `MyApp.Cache.Local` L1 cache using options
+provided in `local_opts`.
 
 ## How it works
 
 `LocalDistributedAdapter` is different from `Nebulex.Adapters.Multilevel` in a couple of ways:
 
-1. L1 must always be `Nebulex.Adapters.Local`
+1. L1 is created automatically and uses `Nebulex.Adapters.Local` adapter
 2. Other levels must be global for nodes, meaning they behave like a shared
-  storage. Simplest example is `NebulexRedisAdapter`, but `Replicated` and
+  storage. The simplest example is `NebulexRedisAdapter`, but `Replicated` and
   `Partitioned` should work too.
 3. All write operations are asynchronously broadcasted to other nodes which
   invalidate affected keys in their local L1 caches.
 
 > #### Race conditions {: .warning}
-> Due to asynchronous nature of invalidation it is possible that a node will read
-stale value from its local cache.
+> There are several important things to keep in mind when working with a
+> multilevel cache in a clustered environment:
+> 1. Always update the underlying storage (e.g. Ecto repo) first and invalidate
+>    the cache after to avoid a potential race condition when another client can
+>    write a stale value to the cache. The adapter follows this pattern moving
+>    from higher to lower levels with deletes.
+> 2. Keep in mind that invalidation messages are broadcasted without any
+>    confirmation from recipient nodes, so there is always a small chance of
+>    reading a stale value from the cache.
 
+<!-- MDOC -->
 
 ## Development
 
