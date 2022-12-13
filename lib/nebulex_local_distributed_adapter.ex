@@ -1,53 +1,11 @@
 defmodule NebulexLocalDistributedAdapter do
-  @moduledoc ~S"""
-  `NebulexLocalDistributedAdapter` can be setup in the same way as
-  `Nebulex.Adapters.Multilevel` with exception of `model` option which is always
-  `:inclusive`
+  @external_resource readme = Path.join([__DIR__, "../README.md"])
 
-  ```elixir
-  defmodule MyApp.Cache do
-    use Nebulex.Cache,
-      otp_app: :slab,
-      adapter: NebulexLocalDistributedAdapter
-  end
+  @moduledoc readme
+             |> File.read!()
+             |> String.split("<!-- MDOC -->")
+             |> Enum.fetch!(1)
 
-  defmodule MyApp.Cache.Local do
-    use Nebulex.Cache,
-      otp_app: :slab,
-      adapter: Nebulex.Adapters.Local
-  end
-
-  # This can be shared cache, e.g. Partitioned, Replicated, Memcached
-  defmodule MyApp.Cache.Redis do
-    use Nebulex.Cache,
-      otp_app: :slab,
-      adapter: NebulexRedisAdapter
-  end
-  ```
-
-  ```elixir
-  config :my_app, MyApp.Cache,
-    levels: [
-      {MyApp.Cache.Local, []}
-      {MyApp.Cache.Redis, []},
-    ]
-  ```
-
-  ## How it works
-
-  `LocalDistributedAdapter` is different from `Nebulex.Adapters.Multilevel` in a couple of ways:
-
-  1. L1 must always be `Nebulex.Adapters.Local`
-  2. Other levels must be global for nodes, meaning they behave like a shared
-    storage. Simplest example is `NebulexRedisAdapter`, but `Replicated` and
-    `Partitioned` should work too.
-  3. All write operations are asynchronously broadcasted to other nodes which
-    invalidate affected keys in their local L1 caches.
-
-  > #### Race conditions {: .warning}
-  > Due to asynchronous nature of invalidation it is possible that a node will read
-  stale value from its local cache.
-  """
   @behaviour Nebulex.Adapter
   @behaviour Nebulex.Adapter.Entry
   @behaviour Nebulex.Adapter.Queryable
