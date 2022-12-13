@@ -9,8 +9,8 @@ defmodule NebulexLocalDistributedAdapter.MultilevelTest do
   setup do
     {:ok, pid} =
       Cache.Standalone.start_link(
+        local_opts: [name: :l1_standalone],
         levels: [
-          {Cache.L1, [name: :l1_standalone]},
           {Cache.Local, [name: :l2_standalone]},
           {Cache.Partitioned, [name: :l3_standalone]}
         ]
@@ -22,17 +22,6 @@ defmodule NebulexLocalDistributedAdapter.MultilevelTest do
     end)
 
     {:ok, cache: Cache.Standalone, name: Cache.Standalone}
-  end
-
-  describe "c:init/1" do
-    test "fails because missing levels config", %{cache: cache} do
-      assert {:error, {%ArgumentError{message: msg}, _}} = cache.start_link(name: :missing_levels)
-
-      assert Regex.match?(
-               ~r"expected levels: to be a list with at least one level definition",
-               msg
-             )
-    end
   end
 
   describe "entry:" do

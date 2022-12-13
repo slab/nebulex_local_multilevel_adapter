@@ -6,20 +6,15 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
   alias NebulexLocalDistributedAdapter.TestCache, as: Cache
 
   setup do
-    isolated_levels = [
-      {Cache.L1, [name: :l1_for_isolated]},
-      {Cache.Local, [name: :l2_for_isolated]}
-    ]
-
-    connected_levels = [
-      {Cache.L1, [name: :l1_for_connected]},
-      {Cache.Partitioned, [name: :l2_for_connected]}
-    ]
-
     node_pid_list =
       start_caches([node() | Node.list()], [
-        {Cache.Isolated, [levels: isolated_levels]},
-        {Cache.Connected, [levels: connected_levels]}
+        {Cache.Isolated,
+         [levels: [{Cache.Local, [name: :l2_for_isolated]}], local_opts: [name: :l1_for_isolated]]},
+        {Cache.Connected,
+         [
+           levels: [{Cache.Partitioned, [name: :l2_for_connected]}],
+           local_opts: [name: :l1_for_connected]
+         ]}
       ])
 
     on_exit(fn ->
@@ -34,26 +29,26 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
     test "supervisor tree" do
       assert {:ok,
               %{
-                id: MyCache.Supervisor,
+                id: Cache.MyCache.Supervisor,
                 start:
                   {Supervisor, :start_link,
                    [
                      [
-                       {NebulexLocalDistributedAdapter.TestCache.L1,
+                       {Cache.MyCache.Local,
                         [telemetry_prefix: [:prefix, :l1], telemetry: [:test], stats: false]},
-                       {NebulexLocalDistributedAdapter.TestCache.L2,
+                       {Cache.L2,
                         [telemetry_prefix: [:prefix, :l2], telemetry: [:test], stats: false]}
                      ],
-                     [name: MyCache.Supervisor, strategy: :one_for_one]
+                     [name: Cache.MyCache.Supervisor, strategy: :one_for_one]
                    ]}
               },
               %{
                 levels: [
-                  %{cache: NebulexLocalDistributedAdapter.TestCache.L1, name: nil},
-                  %{cache: NebulexLocalDistributedAdapter.TestCache.L2, name: nil}
+                  %{cache: Cache.MyCache.Local, name: nil},
+                  %{cache: Cache.L2, name: nil}
                 ],
                 model: :inclusive,
-                name: MyCache,
+                name: Cache.MyCache,
                 started_at: _,
                 stats: false,
                 telemetry: [:test],
@@ -62,8 +57,8 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
                NebulexLocalDistributedAdapter.init(
                  telemetry_prefix: [:prefix],
                  telemetry: [:test],
-                 cache: MyCache,
-                 levels: [{Cache.L1, []}, {Cache.L2, []}]
+                 cache: Cache.MyCache,
+                 levels: [{Cache.L2, []}]
                )
     end
   end

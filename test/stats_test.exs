@@ -7,14 +7,13 @@ defmodule NebulexClusteredMultilevel.StatsTest do
 
   setup do
     levels = [
-      {Cache.L1, [name: :l1_for_stats]},
       {Cache.Local, [name: :l2_for_stats]},
       {Cache.Local2, [name: :l3_for_stats]}
     ]
 
     node_pid_list =
       start_caches([node() | Node.list()], [
-        {Cache.AllLocal, [stats: true, levels: levels]}
+        {Cache.AllLocal, [stats: true, levels: levels, local_opts: [name: :l1_for_stats]]}
       ])
 
     on_exit(fn ->
