@@ -54,8 +54,21 @@ defmodule NebulexLocalDistributedAdapter do
   @behaviour Nebulex.Adapter.Stats
 
   @impl Nebulex.Adapter
-  defmacro __before_compile__(_env) do
+  defmacro __before_compile__(env) do
+    otp_app = Module.get_attribute(env.module, :otp_app)
+
     quote do
+      defmodule Local do
+        @moduledoc """
+        This is the cache for L1
+        """
+        use Nebulex.Cache,
+          otp_app: unquote(otp_app),
+          adapter: Nebulex.Adapters.Local
+      end
+
+      def __local__, do: Local
+
       def delete_local(key, opts \\ []) do
         get_dynamic_cache()
         |> Nebulex.Adapter.with_meta(& &1.delete_local(&2, key, opts))
@@ -70,15 +83,18 @@ defmodule NebulexLocalDistributedAdapter do
 
   @impl Nebulex.Adapter
   def init(opts) do
-    opts = Keyword.put(opts, :model, :inclusive)
+    cache = Keyword.fetch!(opts, :cache)
+
+    opts =
+      opts
+      |> Keyword.put(:model, :inclusive)
+      |> Keyword.update!(:levels, fn levels ->
+        [{cache.__local__(), Keyword.get(opts, :local_opts, [])} | levels]
+      end)
 
     {:ok, child_spec, adapter_meta} = Nebulex.Adapters.Multilevel.init(opts)
 
     [l1_meta | _] = adapter_meta.levels
-
-    if l1_meta.cache.__adapter__ != Nebulex.Adapters.Local do
-      raise "L1 must be Nebulex.Adapters.Local"
-    end
 
     adapter_meta = Map.put(adapter_meta, :l1_name, l1_meta.name || l1_meta.cache)
 

@@ -114,14 +114,7 @@ defmodule NebulexLocalDistributedAdapter.TestCache do
       adapter: NebulexLocalDistributedAdapter
   end
 
-  defmodule L1 do
-    use Nebulex.Cache,
-      otp_app: :nebulex_local_distributed_adapter,
-      adapter: Nebulex.Adapters.Local
-  end
-
   defmodule L1.Mock do
-    @moduledoc false
     use Nebulex.Cache,
       otp_app: :nebulex,
       adapter: NebulexLocalDistributedAdapter.TestCache.AdapterMock
@@ -143,5 +136,11 @@ defmodule NebulexLocalDistributedAdapter.TestCache do
     use Nebulex.Cache,
       otp_app: :nebulex_local_distributed_adapter,
       adapter: Nebulex.Adapters.Local
+  end
+
+  defmodule MyCache do
+    use Nebulex.Cache,
+      otp_app: :nebulex_local_distributed_adapter,
+      adapter: NebulexLocalDistributedAdapter
   end
 end
