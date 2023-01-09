@@ -173,27 +173,28 @@ defmodule NebulexLocalDistributedAdapter do
     with_l1_cache(adapter_meta, :delete_all, [query, []])
   end
 
+  @doc false
+  def execute_from_remote(cache, cache_name, fun, args) do
+    apply(cache, :with_dynamic_cache, [cache_name, cache, fun, args])
+  rescue
+    Nebulex.RegistryLookupError ->
+      :ok
+
+    e ->
+      reraise e, __STACKTRACE__
+  end
+
   defp with_l1_cache(%{levels: [l1_meta | _]} = adapter_meta, fun, args) do
     cache = l1_meta.cache
     cache.with_dynamic_cache(adapter_meta.l1_name, cache, fun, args)
   end
 
   defp run_on_cluster!(adapter_meta, fun, args) do
-    :erpc.multicast(Node.list(), fn ->
-      try do
-        apply(adapter_meta.cache, :with_dynamic_cache, [
-          adapter_meta.name,
-          adapter_meta.cache,
-          fun,
-          args
-        ])
-      rescue
-        Nebulex.RegistryLookupError ->
-          :ok
-
-        e ->
-          reraise e, __STACKTRACE__
-      end
-    end)
+    :erpc.multicast(Node.list(), __MODULE__, :execute_from_remote, [
+      adapter_meta.cache,
+      adapter_meta.name,
+      fun,
+      args
+    ])
   end
 end
