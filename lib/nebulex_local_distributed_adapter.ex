@@ -1,4 +1,5 @@
 defmodule NebulexLocalDistributedAdapter do
+  alias Nebulex.Cache.Cluster
   @external_resource readme = Path.join([__DIR__, "../README.md"])
 
   @moduledoc readme
@@ -55,6 +56,11 @@ defmodule NebulexLocalDistributedAdapter do
     [l1_meta | _] = adapter_meta.levels
 
     adapter_meta = Map.put(adapter_meta, :l1_name, l1_meta.name || l1_meta.cache)
+
+    child_spec =
+      Map.update!(child_spec, :start, fn {module, function, [children | rest_args]} ->
+        {module, function, [children ++ [{__MODULE__.Sidecar, adapter_meta}] | rest_args]}
+      end)
 
     {:ok, child_spec, adapter_meta}
   end
@@ -190,7 +196,10 @@ defmodule NebulexLocalDistributedAdapter do
   end
 
   defp run_on_cluster!(adapter_meta, fun, args) do
-    :erpc.multicast(Node.list(), __MODULE__, :execute_from_remote, [
+    adapter_meta.name
+    |> Cluster.get_nodes()
+    |> List.delete(node())
+    |> :erpc.multicast(__MODULE__, :execute_from_remote, [
       adapter_meta.cache,
       adapter_meta.name,
       fun,
