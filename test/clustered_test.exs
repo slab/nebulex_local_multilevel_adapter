@@ -7,7 +7,7 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
 
   setup do
     node_pid_list =
-      start_caches([node() | Node.list()], [
+      start_caches([node() | Node.list()] -- [:"iex@127.0.0.1"], [
         {Cache.Isolated,
          [levels: [{Cache.Local, [name: :l2_for_isolated]}], local_opts: [name: :l1_for_isolated]]},
         {Cache.Connected,
@@ -37,7 +37,8 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
                        {Cache.MyCache.Local,
                         [telemetry_prefix: [:prefix, :l1], telemetry: [:test], stats: false]},
                        {Cache.L2,
-                        [telemetry_prefix: [:prefix, :l2], telemetry: [:test], stats: false]}
+                        [telemetry_prefix: [:prefix, :l2], telemetry: [:test], stats: false]},
+                       {NebulexLocalDistributedAdapter.Sidecar, %{name: Cache.MyCache}}
                      ],
                      [name: Cache.MyCache.Supervisor, strategy: :one_for_one]
                    ]}
@@ -60,6 +61,17 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
                  cache: Cache.MyCache,
                  levels: [{Cache.L2, []}]
                )
+    end
+
+    test "registers a group", %{connected: connected, isolated: isolated} do
+      nodes_with_cache = [
+        :"node1@127.0.0.1",
+        :"node2@127.0.0.1",
+        :"primary@127.0.0.1"
+      ]
+
+      assert ^nodes_with_cache = Nebulex.Cache.Cluster.get_nodes(isolated)
+      assert ^nodes_with_cache = Nebulex.Cache.Cluster.get_nodes(connected)
     end
   end
 
@@ -317,9 +329,11 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
   end
 
   defp assert_other_nodes(cache, action, args, expected) do
+    nodes = Node.list() -- [:"iex@127.0.0.1"]
+
     assert results =
              :erpc.multicall(
-               Node.list(),
+               nodes,
                cache,
                :with_dynamic_cache,
                [cache, cache, action, args]
