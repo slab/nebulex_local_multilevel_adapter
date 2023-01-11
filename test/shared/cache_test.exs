@@ -1,4 +1,4 @@
-defmodule NebulexLocalDistributedAdapter.CacheTest do
+defmodule NebulexLocalMultilevelAdapter.CacheTest do
   @moduledoc """
   Shared Tests
   """
