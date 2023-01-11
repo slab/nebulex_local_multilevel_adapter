@@ -1,4 +1,4 @@
-defmodule NebulexLocalDistributedAdapter do
+defmodule NebulexLocalMultilevelAdapter do
   alias Nebulex.Cache.Cluster
   @external_resource readme = Path.join([__DIR__, "../README.md"])
 

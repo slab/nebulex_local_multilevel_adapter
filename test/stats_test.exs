@@ -3,7 +3,7 @@ defmodule NebulexClusteredMultilevel.StatsTest do
 
   import Nebulex.CacheCase, only: [wait_until: 1]
 
-  alias NebulexLocalDistributedAdapter.TestCache, as: Cache
+  alias NebulexLocalMultilevelAdapter.TestCache, as: Cache
 
   setup do
     levels = [

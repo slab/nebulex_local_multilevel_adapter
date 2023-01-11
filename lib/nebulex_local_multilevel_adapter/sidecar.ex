@@ -1,4 +1,4 @@
-defmodule NebulexLocalDistributedAdapter.Sidecar do
+defmodule NebulexLocalMultilevelAdapter.Sidecar do
   @moduledoc false
   use GenServer
 

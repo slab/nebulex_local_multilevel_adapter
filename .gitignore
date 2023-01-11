@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-nebulex_local_distributed_adapter-*.tar
+nebulex_local_multilevel_adapter-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/

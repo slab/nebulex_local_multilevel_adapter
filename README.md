@@ -1,4 +1,4 @@
-# NebulexLocalDistributedAdapter
+# NebulexLocalMultilevelAdapter
 
 A variation of
 [Multilevel](https://hexdocs.pm/nebulex/Nebulex.Adapters.Multilevel.html)
@@ -7,12 +7,12 @@ cluster.
 
 ## Installation
 
-Add `nebulex_local_distributed_adapter` to your list of dependencies in `mix.exs`:
+Add `nebulex_local_multilevel_adapter` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:nebulex_local_distributed_adapter, "~> 0.1.0"}
+    {:nebulex_local_multilevel_adapter, "~> 0.1.0"}
   ]
 end
 ```
@@ -21,14 +21,14 @@ end
 
 <!-- MDOC -->
 
-`NebulexLocalDistributedAdapter` setup resembles `Nebulex.Adapters.Multilevel` with two exceptions: `model` option is always
+`NebulexLocalMultilevelAdapter` setup resembles `Nebulex.Adapters.Multilevel` with two exceptions: `model` option is always
 `:inclusive` and the first level is autocreated:
 
 ```elixir
 defmodule MyApp.Cache do
   use Nebulex.Cache,
     otp_app: :slab,
-    adapter: NebulexLocalDistributedAdapter
+    adapter: NebulexLocalMultilevelAdapter
 end
 
 # This can be shared cache, e.g. Partitioned, Replicated, Memcached
@@ -54,7 +54,7 @@ provided in `local_opts`.
 
 ## How it works
 
-`LocalDistributedAdapter` is different from `Nebulex.Adapters.Multilevel` in a couple of ways:
+`LocalMultilevelAdapter` is different from `Nebulex.Adapters.Multilevel` in a couple of ways:
 
 1. L1 is created automatically and uses `Nebulex.Adapters.Local` adapter
 2. Other levels must be global for nodes, meaning they behave like a shared
@@ -78,7 +78,7 @@ provided in `local_opts`.
 
 ## Development
 
-`NebulexLocalDistributedAdapter` relies on shared test code from `Nebulex` repository, so you'll need to fetch it first
+`NebulexLocalMultilevelAdapter` relies on shared test code from `Nebulex` repository, so you'll need to fetch it first
 
 ```console
 export NEBULEX_PATH=nebulex

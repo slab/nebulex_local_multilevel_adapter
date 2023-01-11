@@ -1,13 +1,13 @@
-defmodule NebulexLocalDistributedAdapter.MixProject do
+defmodule NebulexLocalMultilevelAdapter.MixProject do
   use Mix.Project
 
-  @source_url "https://github.com/slab/nebulex_local_distributed_adapter"
+  @source_url "https://github.com/slab/nebulex_local_multilevel_adapter"
   @nbx_vsn "2.4.2"
   @version "0.1.0"
 
   def project do
     [
-      app: :nebulex_local_distributed_adapter,
+      app: :nebulex_local_multilevel_adapter,
       version: @version,
       elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -15,7 +15,7 @@ defmodule NebulexLocalDistributedAdapter.MixProject do
       deps: deps(),
 
       # Docs
-      name: "NebulexLocalDistributedAdapter",
+      name: "NebulexLocalMultilevelAdapter",
       docs: docs()
     ]
   end
@@ -51,9 +51,9 @@ defmodule NebulexLocalDistributedAdapter.MixProject do
 
   defp docs do
     [
-      main: "NebulexLocalDistributedAdapter",
+      main: "NebulexLocalMultilevelAdapter",
       source_ref: "v#{@version}",
-      canonical: "http://hexdocs.pm/nebulex_local_distributed_adapter",
+      canonical: "http://hexdocs.pm/nebulex_local_multilevel_adapter",
       source_url: @source_url,
       extras: [
         "README.md"

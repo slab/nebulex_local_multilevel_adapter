@@ -1,10 +1,10 @@
-defmodule NebulexLocalDistributedAdapter.MultilevelTest do
+defmodule NebulexLocalMultilevelAdapter.MultilevelTest do
   # This is a copy of Multilevel tests. This is to ensure the adapter behaves
   # like Multilevel in a single node setup
   use ExUnit.Case, async: true
-  use NebulexLocalDistributedAdapter.CacheTest
+  use NebulexLocalMultilevelAdapter.CacheTest
 
-  alias NebulexLocalDistributedAdapter.TestCache, as: Cache
+  alias NebulexLocalMultilevelAdapter.TestCache, as: Cache
 
   setup do
     {:ok, pid} =

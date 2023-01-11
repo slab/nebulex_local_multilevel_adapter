@@ -1,9 +1,9 @@
-defmodule NebulexLocalDistributedAdapter.ClusteredTest do
+defmodule NebulexLocalMultilevelAdapter.ClusteredTest do
   use Nebulex.NodeCase
 
   import Nebulex.CacheCase, only: [wait_until: 1]
 
-  alias NebulexLocalDistributedAdapter.TestCache, as: Cache
+  alias NebulexLocalMultilevelAdapter.TestCache, as: Cache
 
   setup do
     node_pid_list =
@@ -38,7 +38,7 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
                         [telemetry_prefix: [:prefix, :l1], telemetry: [:test], stats: false]},
                        {Cache.L2,
                         [telemetry_prefix: [:prefix, :l2], telemetry: [:test], stats: false]},
-                       {NebulexLocalDistributedAdapter.Sidecar, %{name: Cache.MyCache}}
+                       {NebulexLocalMultilevelAdapter.Sidecar, %{name: Cache.MyCache}}
                      ],
                      [name: Cache.MyCache.Supervisor, strategy: :one_for_one]
                    ]}
@@ -55,7 +55,7 @@ defmodule NebulexLocalDistributedAdapter.ClusteredTest do
                 telemetry: [:test],
                 telemetry_prefix: [:prefix]
               }} =
-               NebulexLocalDistributedAdapter.init(
+               NebulexLocalMultilevelAdapter.init(
                  telemetry_prefix: [:prefix],
                  telemetry: [:test],
                  cache: Cache.MyCache,
