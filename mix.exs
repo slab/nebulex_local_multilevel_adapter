@@ -15,6 +15,7 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       aliases: aliases(),
       deps: deps(),
+      description: description(),
       package: package(),
 
       # Docs
@@ -42,6 +43,10 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
       # Docs
       {:ex_doc, "~> 0.29", only: [:dev, :test], runtime: false}
     ]
+  end
+
+  defp description do
+    "A variant of Multilevel adapter for Nebulex with additional cluster features"
   end
 
   defp nebulex_dep do
