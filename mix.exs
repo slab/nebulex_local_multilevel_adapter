@@ -1,21 +1,24 @@
 defmodule NebulexLocalMultilevelAdapter.MixProject do
   use Mix.Project
 
+  @app :nebulex_local_multilevel_adapter
+  @name "NebulexLocalMultilevelAdapter"
   @source_url "https://github.com/slab/nebulex_local_multilevel_adapter"
   @nbx_vsn "2.4.2"
   @version "0.1.0"
 
   def project do
     [
-      app: :nebulex_local_multilevel_adapter,
+      app: @app,
       version: @version,
       elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
       aliases: aliases(),
       deps: deps(),
+      package: package(),
 
       # Docs
-      name: "NebulexLocalMultilevelAdapter",
+      name: @name,
       docs: docs()
     ]
   end
@@ -51,7 +54,7 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
 
   defp docs do
     [
-      main: "NebulexLocalMultilevelAdapter",
+      main: @name,
       source_ref: "v#{@version}",
       canonical: "http://hexdocs.pm/nebulex_local_multilevel_adapter",
       source_url: @source_url,
@@ -67,6 +70,18 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
         "cmd rm -rf nebulex",
         "cmd git clone --depth 1 --branch v#{@nbx_vsn} https://github.com/cabol/nebulex"
       ]
+    ]
+  end
+
+  defp package do
+    [
+      name: @app,
+      maintainers: ["Slab"],
+      licenses: ["BSD-3-Clause"],
+      files: ~w(mix.exs lib README.md),
+      links: %{
+        "Github" => @source_url
+      }
     ]
   end
 end
