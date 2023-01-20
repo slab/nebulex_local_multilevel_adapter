@@ -16,10 +16,29 @@ defmodule NebulexLocalMultilevelAdapter.Sidecar do
     # Trap exit signals to run cleanup job
     _ = Process.flag(:trap_exit, true)
 
+    {:ok, adapter_meta, {:continue, :join_cluster}}
+  end
+
+  @impl true
+  def handle_continue(:join_cluster, adapter_meta) do
+    join_cluster(adapter_meta)
+  end
+
+  @impl true
+  def handle_info(:join_cluster, adapter_meta) do
+    join_cluster(adapter_meta)
+  end
+
+  def join_cluster(adapter_meta) do
+    _ = Nebulex.Cache.Registry.lookup(adapter_meta.name)
+
     # Ensure joining the cluster only when the cache supervision tree is started
     :ok = Cluster.join(adapter_meta.name)
-
-    {:ok, adapter_meta}
+    {:noreply, adapter_meta}
+  rescue
+    ArgumentError ->
+      Process.send_after(self(), :join_cluster, 50)
+      {:noreply, adapter_meta}
   end
 
   @impl true
