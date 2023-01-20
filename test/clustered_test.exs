@@ -17,6 +17,12 @@ defmodule NebulexLocalMultilevelAdapter.ClusteredTest do
          ]}
       ])
 
+    wait_until(fn ->
+      Enum.all?([Cache.Isolated, Cache.Connected], fn cache ->
+        [_, _, _] = Nebulex.Cache.Cluster.get_nodes(cache)
+      end)
+    end)
+
     on_exit(fn ->
       :ok = Process.sleep(100)
       stop_caches(node_pid_list)
