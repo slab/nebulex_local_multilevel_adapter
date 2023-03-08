@@ -1,4 +1,6 @@
 defmodule NebulexLocalMultilevelAdapter do
+  require Logger
+
   alias Nebulex.Cache.Cluster
   @external_resource readme = Path.join([__DIR__, "../README.md"])
 
@@ -183,7 +185,11 @@ defmodule NebulexLocalMultilevelAdapter do
   def execute_from_remote(cache, cache_name, fun, args) do
     apply(cache, :with_dynamic_cache, [cache_name, cache, fun, args])
   rescue
-    Nebulex.RegistryLookupError ->
+    e in [ArgumentError, Nebulex.RegistryLookupError] ->
+      :error
+      |> Exception.format(e, __STACKTRACE__)
+      |> Logger.warning(crash_reason: {e, __STACKTRACE__})
+
       :ok
 
     e ->
