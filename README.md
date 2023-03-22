@@ -12,7 +12,7 @@ Add `nebulex_local_multilevel_adapter` to your list of dependencies in `mix.exs`
 ```elixir
 def deps do
   [
-    {:nebulex_local_multilevel_adapter, "~> 0.1.0"}
+    {:nebulex_local_multilevel_adapter, "~> 0.1.1"}
   ]
 end
 ```
