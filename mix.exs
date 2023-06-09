@@ -4,7 +4,8 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
   @app :nebulex_local_multilevel_adapter
   @name "NebulexLocalMultilevelAdapter"
   @source_url "https://github.com/slab/nebulex_local_multilevel_adapter"
-  @nbx_vsn "2.4.2"
+  @nbx_tag "2.5.1"
+  @nbx_vsn "2.5"
   @version "0.1.1"
 
   def project do
@@ -51,7 +52,7 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
 
   defp nebulex_dep do
     if path = System.get_env("NEBULEX_PATH") do
-      {:nebulex, "~> #{@nbx_vsn}", path: path}
+      {:nebulex, "~> #{@nbx_tag}", path: path}
     else
       {:nebulex, "~> #{@nbx_vsn}"}
     end
@@ -73,7 +74,7 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
     [
       "nbx.setup": [
         "cmd rm -rf nebulex",
-        "cmd git clone --depth 1 --branch v#{@nbx_vsn} https://github.com/cabol/nebulex"
+        "cmd git clone --depth 1 --branch v#{@nbx_tag} https://github.com/cabol/nebulex"
       ]
     ]
   end
