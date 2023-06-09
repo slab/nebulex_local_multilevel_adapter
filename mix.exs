@@ -6,7 +6,7 @@ defmodule NebulexLocalMultilevelAdapter.MixProject do
   @source_url "https://github.com/slab/nebulex_local_multilevel_adapter"
   @nbx_tag "2.5.1"
   @nbx_vsn "2.5"
-  @version "0.1.1"
+  @version "0.2.0"
 
   def project do
     [
